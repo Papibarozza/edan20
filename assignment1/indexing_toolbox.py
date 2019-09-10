@@ -64,19 +64,26 @@ def tf_idf(count,N_doc,Nmbr_documents,documents_containing_word):
     return (count/N_doc)*math.log10(Nmbr_documents/(documents_containing_word))
 
 def cosine_similarity(vector1,vector2):
+    #print(vector1)
 
     nominator = 0
     sum1 = 0
     sum2 = 0
 
-    for key,value in vector1.items():
+    for key in vector1:
         if(key in vector2):
             tf_idf1 = vector1[key]
             tf_idf2 = vector2[key]
-
             nominator+=tf_idf1*tf_idf2
-            sum1 += math.pow(tf_idf1,2)
-            sum2 += math.pow(tf_idf2,2)
+            #print(nominator)
+
+
+    for key,value in vector1.items():
+        sum1 += math.pow(value,2)
+    
+    for key,value in vector2.items():
+        sum2 += math.pow(value,2)
+
     
     sim=nominator/(math.sqrt(sum1)*math.sqrt(sum2))
     return sim
