@@ -93,24 +93,27 @@ def P_katz(bigram,bigrams,bigramsGT,unigrams):
     w2 = bigram[1]
     nr_words = sum(unigrams.values())
     nr_bigrams = sum(bigrams.values())
-    nr_items = nr_words+nr_bigrams
+    #print(nr_words)
     if(bigram in bigramsGT):
-        return bigrams[bigram]/unigrams[w1] #how he wants it
-        #return bigrams[bigram]/nr_items #what it should be?
+        #return bigrams[bigram]/unigrams[w1] #how he wants it
+        return bigramsGT[bigram]/nr_bigrams #what it should be?
     else:
         #print('Using backoff..')
-        #alpha = calculate_alpha2(w1,w2,nr_items,nr_words,bigramsGT,unigrams)
-        #return alpha * unigrams[w2]/nr_items #what it should be?
-        return unigrams[w2]/nr_words #How he wants it.
+        if(w2 in unigrams):
+            alpha = calculate_alpha2(w1,w2,nr_bigrams,nr_words,bigramsGT,unigrams)
+            return alpha * unigrams[w2]/nr_words #what it should be?
+        else:
+            return unigrams[w1]/nr_words
+        #return unigrams[w2]/nr_words #How he wants it.
 
 
-def calculate_alpha2(w1,w2,nr_items,nr_words,bigramsGT,unigrams):
+def calculate_alpha2(w1,w2,nr_bigrams,nr_words,bigramsGT,unigrams):
     nominator= 1
     denominator =1
     for ngram_pair,value in bigramsGT.items():
         if(ngram_pair[0]==w1):
             #nominator-=value/unigrams[w1] #Wiggly probability
-            nominator-=value/(nr_items)
+            nominator-=value/(nr_bigrams)
             denominator-=unigrams[ngram_pair[1]]/nr_words
     return nominator/denominator
 
@@ -120,7 +123,7 @@ def most_probable_bigram(word,bigram,bigrams_GT_estimate,unigrams):
     prob_old = 0
     wrd =''
     k = Counter(unigrams)
-    for wrd in k.most_common(100):
+    for wrd in k.most_common(200):
         prob = P_katz((word,wrd[0]),bigrams,bigrams_GT_estimate,unigrams)
         if(prob > prob_old and wrd[0] != '<s>' and wrd[0] !='</s>' ):
             prob_old=prob
@@ -138,10 +141,13 @@ if __name__ == "__main__":
     bigrams = count_bigrams(words)
     bigrams_GT_estimate = good_turing(copy.deepcopy(bigrams)) #Recalculate
     assert not(bigrams == bigrams_GT_estimate),'Shouldnt be equal'
-    bigram=('det','är')
-    while True:
+    bigram=('i','till')
+    print(sum(bigrams.values()),sum(unigrams.values()))
+    print(len(words))
+    print(P_katz(bigram,bigrams,bigrams_GT_estimate,unigrams))
+    """ while True:
         word = input("-: ")
-        print(most_probable_bigram(word,bigrams,bigrams_GT_estimate,unigrams))
+        print(most_probable_bigram(word,bigrams,bigrams_GT_estimate,unigrams)) """
 
     #print(bigram,P_katz(bigram,bigrams,bigrams_GT_estimate,unigrams))
     """ sentence = '<s> det var en gång en katt som hette nils </s>'
