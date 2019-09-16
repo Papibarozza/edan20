@@ -1,6 +1,6 @@
 import regex as re
 import copy
-from math import log
+import math
 import sys
 from collections import Counter
 def normalize_file(file='Selma.txt'):
@@ -8,9 +8,9 @@ def normalize_file(file='Selma.txt'):
     text = file.read()
     #for m in re.finditer(r'([\p{Lu}][^\.\n]+\.)', text):
 
-    txt2 = (re.sub(r'[^\P{P}.]+','',text)) #Removes every punctuation character that is not a dot
-    txt3 = re.sub(r'([\p{Lu}\p{L}]+[^\.]+\.)',r' <s> \1 </s> ',txt2) #Find all sentences which begins with uppercase letter and ends with dot.
-    txt4 = re.sub(r'\.','',txt3).lower() #Removes the dot and makes the text lowercase.
+    txt2 = (re.sub(r'[^\P{P}.?!]+','',text)) #Removes every punctuation character that is not a dot,? or !
+    txt3 = re.sub(r'([\p{Lu}\p{L}]+[^.^?^!]+[.!?])',r' <s> \1 </s> ',txt2) #Find all sentences which begins with uppercase letter and ends with dot/!/?.
+    txt4 = re.sub(r'[.!?]','',txt3).lower() #Removes the dot/?/! and makes the text lowercase.
   return txt4
 
 
@@ -95,16 +95,17 @@ def P_katz(bigram,bigrams,bigramsGT,unigrams):
     nr_bigrams = sum(bigrams.values())
     #print(nr_words)
     if(bigram in bigramsGT):
-        #return bigrams[bigram]/unigrams[w1] #how he wants it
-        return bigramsGT[bigram]/nr_bigrams #what it should be?
+        return bigrams[bigram]/unigrams[w1] #how he wants it
+        #return bigramsGT[bigram]/nr_bigrams #what it should be?
     else:
         #print('Using backoff..')
-        if(w2 in unigrams):
+        return unigrams[w2]/nr_words #How he wants it.
+        
+"""         if(w2 in unigrams):
             alpha = calculate_alpha2(w1,w2,nr_bigrams,nr_words,bigramsGT,unigrams)
             return alpha * unigrams[w2]/nr_words #what it should be?
         else:
-            return unigrams[w1]/nr_words
-        #return unigrams[w2]/nr_words #How he wants it.
+            return unigrams[w1]/nr_words """
 
 
 def calculate_alpha2(w1,w2,nr_bigrams,nr_words,bigramsGT,unigrams):
@@ -140,23 +141,38 @@ if __name__ == "__main__":
     unigrams = count_unigrams(words)
     bigrams = count_bigrams(words)
     bigrams_GT_estimate = good_turing(copy.deepcopy(bigrams)) #Recalculate
+    nr_words = sum(unigrams.values())
     assert not(bigrams == bigrams_GT_estimate),'Shouldnt be equal'
     bigram=('i','till')
-    print(sum(bigrams.values()),sum(unigrams.values()))
-    print(len(words))
-    print(P_katz(bigram,bigrams,bigrams_GT_estimate,unigrams))
+    
     """ while True:
         word = input("-: ")
         print(most_probable_bigram(word,bigrams,bigrams_GT_estimate,unigrams)) """
 
     #print(bigram,P_katz(bigram,bigrams,bigrams_GT_estimate,unigrams))
-    """ sentence = '<s> det var en gång en katt som hette nils </s>'
+    sentence = '<s> det var en gång en katt som hette nils </s>'
     sentence_words = tokenize(sentence)
     bigram_sentence = count_bigrams(tokenize(sentence))
-    for bigram in bigram_sentence:
-        print(bigram,P_katz(bigram,bigrams,bigrams_GT_estimate,unigrams)) """
 
-    #print(bigrams[bigram])
+    prob_bigrams = 1
+    print('==========================================')
+    print('wi','wi+1','Ci,i+1','C(i)','P(wi+1|wi)')
+    print('==========================================')
+    for bigram in bigram_sentence:
+        w1 = bigram[0]
+        w2 = bigram[1]
+        bigram_count = bigrams[bigram] if bigram in bigrams else 0
+        count_w1 = unigrams[w1]
+        prob = P_katz(bigram,bigrams,bigrams_GT_estimate,unigrams)
+        prob_bigrams=prob_bigrams*prob
+        print(w1,w2,bigram_count,count_w1,prob if bigram in bigrams else '0.0 *backoff: '+str(prob))
+    print('==========================================')
+    print('Prob. bigrams:',prob_bigrams)
+    print('Geometric mean prob.', prob_bigrams**(1.0/len(bigram_sentence)))
+    entropy = (-1.0/len(bigram_sentence))*math.log2(prob_bigrams)
+    print('Entropy rate:',entropy)
+    print('Perplexity:', 2**entropy )
+    print('\n\n')
 
 """     
     lr = likelihood_ratio(words,unigrams,bigrams)
