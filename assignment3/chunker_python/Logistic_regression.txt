@@ -1,0 +1,44 @@
+Extracting the features...
+Encoding the features...
+Training the model...
+LogisticRegression(C=1.0, class_weight=None, dual=True, fit_intercept=True,
+                   intercept_scaling=1, l1_ratio=None, max_iter=100,
+                   multi_class='warn', n_jobs=None, penalty='l2',
+                   random_state=None, solver='liblinear', tol=0.0001, verbose=0,
+                   warm_start=False)
+Predicting the chunks in the test set...
+Classification report for classifier LogisticRegression(C=1.0, class_weight=None, dual=True, fit_intercept=True,
+                   intercept_scaling=1, l1_ratio=None, max_iter=100,
+                   multi_class='warn', n_jobs=None, penalty='l2',
+                   random_state=None, solver='liblinear', tol=0.0001, verbose=0,
+                   warm_start=False):
+              precision    recall  f1-score   support
+
+      B-ADJP       0.83      0.67      0.74       438
+      B-ADVP       0.81      0.81      0.81       866
+     B-CONJP       0.67      0.44      0.53         9
+      B-INTJ       1.00      0.50      0.67         2
+       B-LST       0.00      0.00      0.00         5
+        B-NP       0.96      0.96      0.96     12422
+        B-PP       0.96      0.98      0.97      4811
+       B-PRT       0.77      0.74      0.75       106
+      B-SBAR       0.89      0.84      0.87       535
+        B-VP       0.95      0.95      0.95      4658
+      I-ADJP       0.86      0.54      0.66       167
+      I-ADVP       0.63      0.48      0.55        89
+     I-CONJP       0.77      0.77      0.77        13
+       I-LST       0.00      0.00      0.00         2
+        I-NP       0.96      0.96      0.96     14376
+        I-PP       0.88      0.58      0.70        48
+      I-SBAR       0.07      0.25      0.11         4
+        I-VP       0.93      0.95      0.94      2646
+           O       0.95      0.96      0.96      6180
+
+    accuracy                           0.95     47377
+   macro avg       0.73      0.65      0.68     47377
+weighted avg       0.95      0.95      0.95     47377
+
+
+Predicting the test set...
+Training time: 1.6486979166666667
+Test time: 0.052083333333333336
