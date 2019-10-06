@@ -156,4 +156,4 @@ if __name__ == "__main__":
     formatted_corpus = conll.split_rows(sentences, column_names_2006)
     X,Y = extract_features(formatted_corpus,3)
     i = 3
-    print(len(X[4],Y[4])
+    #print(len(X[4],Y[4])
